@@ -1,0 +1,13 @@
+services:
+  ros2_ur_moveit:
+    build: .
+    container_name: ur_humble_container
+    network_mode: host  # 使用宿主机网络以便发现机器人硬件
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw  # 图形界面映射
+    privileged: true                      # 给予硬件访问权限
+    stdin_open: true
+    tty: true
