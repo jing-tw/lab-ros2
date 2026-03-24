@@ -23,3 +23,11 @@ ros2 launch ur_moveit_config ur_moveit.launch.py ur_type:=ur5e  launch_rviz:=tru
 # Show Panda robot
 ros2 launch moveit2_tutorials demo.launch.py rviz_tutorial:=true
 ```
+
+## Clean 
+```
+docker compose down   # stops and removes the container, network, and default network volume.
+docker compose down --rmi all # removes both locally built images and pulled base images
+
+
+```
