@@ -6,19 +6,39 @@
 ## Quick
 ```
 # on host machine
-start.sh 
+git clone git@github.com:jing-tw/lab-ros2.git
+cd labs/03-moveit-move-arm
 
-# in container
+# start the container
+# docker exec -it ur_humble_container bash
+./start.sh
+
+# prepare the packages (in container)
 ./docker-entrypoint.sh
 
-# show robots
-ros2 launch ur_moveit_config ur_moveit.launch.py ur_type:=ur5e  launch_rviz:=true
+# show Panda robot
+source /ros2_ws/install/setup.bash
 ros2 launch moveit2_tutorials demo.launch.py rviz_tutorial:=true
 
+```
 
-# on host machine 
-./clear.sh
+## Test (on host)
+```
+# open another terminal
+docker exec -it ur_humble_container bash
 
+cd /ros2_ws
+source /opt/ros/humble/setup.bash
+source /ros2_ws/install/setup.bash   # 如果你有自己的 workspace
+
+
+# 執行你的腳本
+python3 src/move_panda_moveit2.py
+```
+
+## clean (on host)
+```
+./clean.sh
 ```
 
 ## Build & Start
@@ -58,3 +78,7 @@ docker compose down
 docker compose down --rmi all 
 
 ```
+
+# Reference
+https://docs.google.com/document/d/17W982jvqyqAQ-Qc_H7OXPXbHFJvw3S9N9zEyenE1SG8/edit?usp=sharing
+

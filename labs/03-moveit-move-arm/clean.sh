@@ -11,10 +11,10 @@ else
     echo "Operation cancelled."
 fi
 
-read -p "Are you sure you want to delete everything in src except python source files/? [y/N] " confirm
+read -p "Are you sure you want to delete all packages in src folder? [y/N] " confirm
 if [[ $confirm == [yY] ]]; then
-    # sudo rm -rf src/
-    cd src && find . \( ! -name 'old' -a ! -name '*.py' \) -prune -o -exec rm -rf {} +
+    # delete everything under src/ except old/ folders and *.py files (including recursively).
+    sudo bash -c 'cd src && find . \( -name "old" -o -name "*.py" \) -prune -o -exec rm -rf {} +'
     echo "Directories removed."
 else
     echo "Operation cancelled."
