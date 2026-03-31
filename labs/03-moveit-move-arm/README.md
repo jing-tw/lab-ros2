@@ -6,20 +6,17 @@
 ## Quick
 ```
 # on host machine
-xhost +local:docker
-docker compose up -d --build 
-docker exec -it ur_humble_container bash
+start.sh 
 
 # in container
-./01_init.sh
+./docker-entrypoint.sh
 
 # show robots
 ros2 launch ur_moveit_config ur_moveit.launch.py ur_type:=ur5e  launch_rviz:=true
 ros2 launch moveit2_tutorials demo.launch.py rviz_tutorial:=true
 
 
-# on host machine
-# clean
+# on host machine 
 ./clear.sh
 
 ```
