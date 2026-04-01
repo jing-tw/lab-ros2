@@ -41,9 +41,8 @@ python3 -c "from moveit.planning import MoveItPy; print('成功！')"
 cd /ros2_ws/src
 
 # clone
-git clone https://github.com/AndrejOrsula/pymoveit2.git
-
 # install & build (official, full package, https://github.com/AndrejOrsula/pymoveit2)
+# git clone https://github.com/AndrejOrsula/pymoveit2.git
 # cd /ros2_ws
 # rosdep install -y -r -i --rosdistro ${ROS_DISTRO} --from-paths .
 # colcon build --symlink-install --cmake-args "-DCMAKE_BUILD_TYPE=Release"

@@ -11,13 +11,13 @@ cd labs/03-moveit-move-arm
 
 # start the container
 # docker exec -it ur_humble_container bash
-./start.sh
+. ./init.sh
 
 # prepare the packages (in container)
-./docker-entrypoint.sh
+. ./docker-entrypoint.sh
 
 # show Panda robot
-source /ros2_ws/install/setup.bash
+. /ros2_ws/install/setup.bash
 ros2 launch moveit2_tutorials demo.launch.py rviz_tutorial:=true
 
 ```
