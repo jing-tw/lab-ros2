@@ -3,28 +3,45 @@
 import rclpy
 from rclpy.node import Node
 from pymoveit2 import MoveIt2
-from pymoveit2.robots import panda
+from pymoveit2.robots import panda  # not sutited for FR3, but we can still use the same interface
 import time
+import math
 
 class PandaMover(Node):
     def __init__(self):
-        super().__init__("panda_mover")
-        
+        super().__init__("pfr3_mover")
+
+         # check the names from the robot model
         self.get_logger().info(f"Joint names: {panda.joint_names()}")
         self.get_logger().info(f"base_link names: {panda.base_link_name()}")
         self.get_logger().info(f"end_effector names: {panda.end_effector_name()}")
 
+        # self.moveit2 = MoveIt2(
+        #     node=self,
+        #     joint_names=panda.joint_names(),
+        #     base_link_name=panda.base_link_name(),
+        #     end_effector_name=panda.end_effector_name(),
+        #     group_name="fr3_arm",
+        # )
+        
+
         self.moveit2 = MoveIt2(
             node=self,
-            joint_names=panda.joint_names(),
-            base_link_name=panda.base_link_name(),
-            end_effector_name=panda.end_effector_name(),
-            group_name="panda_arm",
+            joint_names=[
+                "fr3_joint1", "fr3_joint2", "fr3_joint3", "fr3_joint4",
+                "fr3_joint5", "fr3_joint6", "fr3_joint7"
+            ],
+            base_link_name="fr3_link0",      # 通常是 fr3_link0 或 link0，請確認你的 URDF
+            end_effector_name="fr3_hand",   # 常見是 fr3_link7 或 fr3_hand
+            group_name="fr3_arm",
         )
+
         
         # === 關鍵調整：大幅降低速度與加速度，讓執行更容易通過 ===
         self.moveit2.max_velocity = 0.08      # 原本 0.15 → 降到很慢
         self.moveit2.max_acceleration = 0.08
+
+        
         
         self.get_logger().info("✅ Panda pymoveit2 介面已準備好！（已降低速度）")
 
@@ -33,8 +50,9 @@ class PandaMover(Node):
         self.get_logger().info("移動到安全 home 姿勢...")
         
         # 這個姿勢比較保守，不容易自碰撞
-        safe_joints = [0.0, -0.3, 0.0, -1.8, 0.0, 1.8, 0.8]
-        
+        safe_joints_deg = [11.0, 59.0, 18.0, -73.0, -20.0, 130.0, 78.0]
+        safe_joints = [math.radians(deg) for deg in safe_joints_deg]
+        self.get_logger().info(" ==================================================== ")
         self.moveit2.move_to_configuration(safe_joints)
         self.moveit2.wait_until_executed()
         self.get_logger().info("✅ 安全 home 姿勢完成")
@@ -102,11 +120,11 @@ def main():
         time.sleep(4.0)        # 多給一點時間讓 joint_states 穩定
         node.move_to_safe_home()     # 先試這個保守姿勢
         time.sleep(2.0)
-        node.get_current_pose()      # 印出目前姿勢資訊
-        node.print_current_joints()    # 印出目前關節角度
+        #node.get_current_pose()      # 印出目前姿勢資訊
+        #node.print_current_joints()    # 印出目前關節角度
         #time.sleep(2.0)
         # node.move_cartesian_safe()   # 如果上面還是 abort，可以試這個
-        time.sleep(2.0)
+        #time.sleep(2.0)
     except KeyboardInterrupt:
         pass
     finally:
