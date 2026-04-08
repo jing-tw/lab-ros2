@@ -16,19 +16,10 @@ class PandaMover(Node):
     def __init__(self):
         super().__init__("pfr3_mover")
 
-         # check the names from the robot model
-        self.get_logger().info(f"Joint names: {panda.joint_names()}")
-        self.get_logger().info(f"base_link names: {panda.base_link_name()}")
-        self.get_logger().info(f"end_effector names: {panda.end_effector_name()}")
-
-        # self.moveit2 = MoveIt2(
-        #     node=self,
-        #     joint_names=panda.joint_names(),
-        #     base_link_name=panda.base_link_name(),
-        #     end_effector_name=panda.end_effector_name(),
-        #     group_name="fr3_arm",
-        # )
-        
+        # check the names from the robot model
+        # self.get_logger().info(f"Joint names: {panda.joint_names()}")
+        # self.get_logger().info(f"base_link names: {panda.base_link_name()}")
+        # self.get_logger().info(f"end_effector names: {panda.end_effector_name()}")
 
         self.moveit2 = MoveIt2(
             node=self,
@@ -41,7 +32,6 @@ class PandaMover(Node):
             group_name="fr3_arm",
         )
 
-        
         # === 關鍵調整：大幅降低速度與加速度，讓執行更容易通過 ===
         self.moveit2.max_velocity = 1.0 #0.08      # 原本 0.15 → 降到很慢
         self.moveit2.max_acceleration = 1.0 # 0.08
@@ -87,30 +77,6 @@ class PandaMover(Node):
         self.moveit2.wait_until_executed()
         self.get_logger().info("✅ 笛卡爾安全移動完成")
 
-    # def get_current_pose(self):
-    #     """取得目前 End-Effector 的姿勢 (使用 Forward Kinematics)"""
-    #     self.get_logger().info("正在取得目前 End-Effector 姿勢...")
-
-    #     # 方法1：使用 joint_state 計算 FK（pymoveit2 推薦方式）
-    #     current_joints = self.moveit2.joint_state   # 這是正確屬性
-
-    #     if current_joints is None or len(current_joints.position) == 0:
-    #         self.get_logger().warn("目前還沒有 joint states")
-    #         return None
-
-    #     self.get_logger().info(f"目前關節角度: {current_joints}")
-
-    #     # 方法2：如果想直接取得 Pose，可以用以下方式（較進階）
-    #     # 但 pymoveit2 本身沒有內建 get_current_pose，我們可以用 TF 或 moveit_py 輔助
-
-    #     # 簡單印出關節角度（先這樣除錯）
-    #     self.get_logger().info("=== 目前關節狀態 ===")
-    #     for name, pos in zip(self.moveit2.joint_names, current_joints.position):
-    #         self.get_logger().info(f"  {name}: {pos:.4f} rad")
-
-    #     # TODO: 如果你之後想取得完整 Pose，可以切換到 moveit_py
-    #     return current_joints
-
     def print_current_joints(self):
         """印出目前所有關節角度（最可靠）"""
         joints = self.moveit2.joint_state
@@ -122,34 +88,6 @@ class PandaMover(Node):
         for name, value in zip(self.moveit2.joint_names, joints.position):
             self.get_logger().info(f"  {name:15s}: {value:8.4f} rad ({value*180/3.1416:6.1f} deg)")
 
-   
-
-    # def get_current_cartesian_pose(self):
-    #     """取得目前 end-effector 的笛卡爾座標 (position + orientation)"""
-    #     try:
-    #         # 取得目前 Pose (PoseStamped)
-    #         current_pose = self.moveit2.get_current_pose()
-            
-    #         if current_pose is None:
-    #             self.get_logger().warn("無法取得目前 Cartesian pose (回傳 None)")
-    #             return None
-
-    #         pose = current_pose.pose   # geometry_msgs.msg.Pose
-            
-    #         # 印出易讀的資訊
-    #         self.get_logger().info("=== 当前 Cartesian Pose (TCP) ===")
-    #         self.get_logger().info(f"Reference Frame: {current_pose.header.frame_id}")
-    #         self.get_logger().info(f"Position (x, y, z): "
-    #                              f"{pose.position.x:.4f}, {pose.position.y:.4f}, {pose.position.z:.4f}")
-    #         self.get_logger().info(f"Orientation (qx, qy, qz, qw): "
-    #                              f"{pose.orientation.x:.4f}, {pose.orientation.y:.4f}, "
-    #                              f"{pose.orientation.z:.4f}, {pose.orientation.w:.4f}")
-            
-    #         return current_pose   # 回傳完整的 PoseStamped
-            
-    #     except Exception as e:
-    #         self.get_logger().error(f"取得 Cartesian pose 時發生錯誤: {e}")
-    #         return None
     def get_current_cartesian_pose(self):
         """使用 TF2 取得目前 end-effector 的 Cartesian pose"""
         try:
@@ -207,13 +145,14 @@ def main():
 
         node.move_to_safe_home()     # 先試這個保守姿勢
         time.sleep(2.0)
-
-
-        # node.get_current_pose()      # 印出目前姿勢資訊
         node.get_current_cartesian_pose()  # 印出目前笛卡爾位姿資訊
         node.print_current_joints()    # 印出目前關節角度
-       # time.sleep(2.0)
-       # node.move_cartesian_safe()   # 如果上面還是 abort，可以試這個
+        time.sleep(2.0)
+
+        # node.move_cartesian_safe()   # 如果上面還是 abort，可以試這個
+        # time.sleep(2.0)
+        # node.get_current_cartesian_pose()  # 印出目前笛卡爾位姿資訊
+        # node.print_current_joints()    # 印出目前關節角度
         #time.sleep(2.0)
     except KeyboardInterrupt:
         pass

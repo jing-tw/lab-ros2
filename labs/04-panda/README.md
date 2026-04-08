@@ -4,7 +4,7 @@
 ```
 # pull the source
 git clone git@github.com:jing-tw/lab-ros2.git
-cd labs/03-moveit-move-arm
+cd labs/04-panda
 
 # start the container
 # docker exec -it ur_humble_container bash
@@ -31,7 +31,8 @@ ros2 launch franka_fr3_moveit_config moveit.launch.py robot_ip:=fake use_fake_ha
 cd /ros2_ws
 source /opt/ros/humble/setup.bash
 source /ros2_ws/install/setup.bash  
-python3 src/move_panda_moveit2.py
+python3 src/move_panda_moveit2.py    # move panda robot
+python3 src/move_fr3_arm.py          # move fr3 robot
 
 # clean
 ./clean.sh

@@ -1,11 +1,4 @@
 #!/bin/bash
-# xhost +local:docker
-# docker compose up -d --build 
-# docker exec -it ur_humble_container bash
-
-# echo "If you got the container running message, docker rm -f ur_humble_container"
-
-#!/bin/bash
 
 # --- Configuration ---
 CONTAINER_NAME="ur_humble_container"
