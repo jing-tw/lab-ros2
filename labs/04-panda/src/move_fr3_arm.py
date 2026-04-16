@@ -62,21 +62,75 @@ class PandaMover(Node):
         self.moveit2.wait_until_executed()
         self.get_logger().info("✅ 安全 home 姿勢完成")
 
-    def move_cartesian_safe(self):
+    # Usage
+    # move_cartesian_safe(0.35, 0, 0.45, 1.0)
+    def move_cartesian_safe(self, x, y, z, w):
         """使用笛卡爾空間移動（通常比關節空間更穩定）"""
         from geometry_msgs.msg import Pose
         self.get_logger().info("移動到安全笛卡爾位置...")
         
         pose = Pose()
-        pose.position.x = 0.35
-        pose.position.y = 0.0
-        pose.position.z = 0.45
-        pose.orientation.w = 1.0
+        pose.position.x = x # 1.0 # 0.35
+        pose.position.y = y # 0.0 # 0.0
+        pose.position.z = z # 0.0 # 0.45
+        pose.orientation.w = w # -0.0 # 1.0
         
         self.moveit2.move_to_pose(pose)
         self.moveit2.wait_until_executed()
         self.get_logger().info("✅ 笛卡爾安全移動完成")
 
+    def move_cartesian_safe2(self, x, y, z, roll=0.0, pitch=0.0, yaw=0.0):
+        """
+        使用笛卡爾空間移動 - Euler 角度版本（純 Python，無需額外套件）
+        roll, pitch, yaw 單位為「弧度」（radians）
+        """
+        from geometry_msgs.msg import Pose
+        
+        self.get_logger().info(f"移動到安全笛卡爾位置... "
+                            f"xyz=({x:.3f}, {y:.3f}, {z:.3f}), "
+                            f"rpy=({roll:.3f}, {pitch:.3f}, {yaw:.3f})")
+
+        # 建立 Pose
+        pose = Pose()
+        
+        # === 位置 ===
+        pose.position.x = x
+        pose.position.y = y
+        pose.position.z = z
+        
+        # === Euler → Quaternion 轉換（純 Python）===
+        q = self._quaternion_from_euler(roll, pitch, yaw)
+        
+        pose.orientation.x = q[0]
+        pose.orientation.y = q[1]
+        pose.orientation.z = q[2]
+        pose.orientation.w = q[3]
+
+        # 執行移動
+        self.moveit2.move_to_pose(pose)
+        self.moveit2.wait_until_executed()
+        
+        self.get_logger().info("✅ 笛卡爾安全移動完成 (Euler 版本)")
+
+    
+    def _quaternion_from_euler(self, roll, pitch, yaw):
+        """純 Python 版本的 Euler to Quaternion 轉換 (ZYX 順序)"""
+        import math
+        
+        cy = math.cos(yaw * 0.5)
+        sy = math.sin(yaw * 0.5)
+        cp = math.cos(pitch * 0.5)
+        sp = math.sin(pitch * 0.5)
+        cr = math.cos(roll * 0.5)
+        sr = math.sin(roll * 0.5)
+
+        qx = cy * cp * sr - sy * sp * cr
+        qy = sy * cp * sr + cy * sp * cr
+        qz = sy * cp * cr - cy * sp * sr
+        qw = cy * cp * cr + sy * sp * sr
+
+        return [qx, qy, qz, qw]   # ROS 的順序是 x, y, z, w
+    
     def print_current_joints(self):
         """印出目前所有關節角度（最可靠）"""
         joints = self.moveit2.joint_state
@@ -143,17 +197,19 @@ def main():
     try:
         time.sleep(4.0)        # 多給一點時間讓 joint_states 穩定
 
-        node.move_to_safe_home()     # 先試這個保守姿勢
+        # node.move_to_safe_home()     # 先試這個保守姿勢
+        # time.sleep(2.0)
+        # node.get_current_cartesian_pose()  # 印出目前笛卡爾位姿資訊
+        # node.print_current_joints()    # 印出目前關節角度
+        # time.sleep(2.0)
+
+        # node.move_cartesian_safe()   # 如果上面還是 abort，可以試這個
+        # node.move_cartesian_safe(0.35, 0.0, 0.45, 1.0)
+        node.move_cartesian_safe2(0.35, 0.0, 0.45, roll=0.0, pitch=0.0, yaw=0.0)   
         time.sleep(2.0)
         node.get_current_cartesian_pose()  # 印出目前笛卡爾位姿資訊
         node.print_current_joints()    # 印出目前關節角度
         time.sleep(2.0)
-
-        # node.move_cartesian_safe()   # 如果上面還是 abort，可以試這個
-        # time.sleep(2.0)
-        # node.get_current_cartesian_pose()  # 印出目前笛卡爾位姿資訊
-        # node.print_current_joints()    # 印出目前關節角度
-        #time.sleep(2.0)
     except KeyboardInterrupt:
         pass
     finally:
