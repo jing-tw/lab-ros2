@@ -8,7 +8,7 @@ cd labs/06.1-pinocchio-simple
 
 
 # build image
-. ./init.sh
+. ./init_container.sh
 
 # into the container
 . ./start.sh
@@ -20,7 +20,7 @@ cmake ..
 make
 
 # clean
-./clean.sh
+./clean._container.sh
 ```
 
 

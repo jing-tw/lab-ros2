@@ -11,7 +11,7 @@ cd labs/03-moveit-move-arm
 
 # start the container
 # docker exec -it ur_humble_container bash
-. ./init.sh
+. ./init_container.sh
 
 # prepare the packages (in container)
 . ./docker-entrypoint.sh
@@ -38,7 +38,7 @@ python3 src/move_panda_moveit2.py
 
 ## clean (on host)
 ```
-./clean.sh
+./clean._container.sh
 ```
 
 ## Build & Start
@@ -57,7 +57,7 @@ docker exec -it ur_humble_container bash
 
 ## Pull dep & build
 ```
-./01_init.sh
+./01_init_container.sh
 ```
 
 ## Show the robot

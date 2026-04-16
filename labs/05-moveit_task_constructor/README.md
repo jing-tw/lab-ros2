@@ -8,7 +8,7 @@ cd labs/04-panda
 
 # start the container
 # docker exec -it ur_humble_container bash
-. ./init.sh
+. ./init_container.sh
 
 # prepare the packages (in container)
 . ./docker-entrypoint.sh
@@ -35,7 +35,7 @@ python3 src/move_panda_moveit2.py    # move panda robot
 python3 src/move_fr3_arm.py          # move fr3 robot
 
 # clean
-./clean.sh
+./clean._container.sh
 ```
 
 
