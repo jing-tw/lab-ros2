@@ -5,6 +5,10 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Layer 2: Dependencies
+RUN sed -i 's/archive.ubuntu.com/tw.archive.ubuntu.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.ubuntu.com/tw.archive.ubuntu.com/g' /etc/apt/sources.list
+RUN rm -fr /var/lib/apt/lists/*
+RUN apt-get clean
 RUN apt-get update && apt-get install -y \
     sudo \
     lsb-release \
