@@ -1,40 +1,43 @@
 # Move Robot
 
 ## Quick
+### Env Setup: create base docker image and show robots
 ```
 # pull the source
 git clone git@github.com:jing-tw/lab-ros2.git
-cd labs/04-panda
+goto the demo folder
 
-# start the container
-# docker exec -it ur_humble_container bash
+# [host] create the base container
 . ./init_container.sh
 
-# prepare the packages (in container)
+# [in container] install packages
 . ./docker-entrypoint.sh
 
-# show Panda robot
+# [in container] show Panda robot
 . /ros2_ws/install/setup.bash
 ros2 launch moveit2_tutorials demo.launch.py rviz_tutorial:=true
 
-# show UR robot
+# [in container] show UR robot
 . /ros2_ws/install/setup.bash
 ros2 launch ur_moveit_config ur_moveit.launch.py ur_type:=ur5e  launch_rviz:=true
 
-# show franka fr3 robot
+# [in container] show franka fr3 robot
 ros2 launch franka_fr3_moveit_config moveit.launch.py robot_ip:=fake use_fake_hardware:=true
+```
 
-# into the container
+### Dev process
+```
+# [host] Get into the container
 ./start.sh
 
-# run script
+# [in container] move arm python script demo
 cd /ros2_ws
 source /opt/ros/humble/setup.bash
 source /ros2_ws/install/setup.bash  
 python3 src/move_panda_moveit2.py    # move panda robot
 python3 src/move_fr3_arm.py          # move fr3 robot
 
-# clean
+# [host] clean
 ./clean._container.sh
 ```
 
