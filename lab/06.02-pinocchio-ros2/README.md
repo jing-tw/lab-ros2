@@ -1,6 +1,7 @@
 # Move Robot
 
 ## Quick
+### MySRC example
 ```
 # pull the source
 git clone git@github.com:jing-tw/lab-ros2.git
@@ -13,16 +14,7 @@ goto the demo folder
 . ./start.sh
 
 # dev
-# c++ example 
-cd src/panda_ik
-mkdir build && cd build
-cmake ..
-make
-panda_ik  # run
-
-# python example
-pip install pin
-python3 panda_ik.py  # run
+see src/mysrc/panda_ik/README.md
 
 # clean
 ./clean._container.sh
