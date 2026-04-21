@@ -22,6 +22,7 @@ ros2 launch moveit2_tutorials demo.launch.py rviz_tutorial:=true
 ros2 launch ur_moveit_config ur_moveit.launch.py ur_type:=ur5e  launch_rviz:=true
 
 # [in container] show franka fr3 robot
+. /ros2_ws/install/setup.bash
 ros2 launch franka_fr3_moveit_config moveit.launch.py robot_ip:=fake use_fake_hardware:=true
 ```
 
