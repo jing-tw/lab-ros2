@@ -1,0 +1,14 @@
+services:
+  ros2-humble-service:
+    build: .
+    container_name: ros2-container
+    network_mode: host  # Use host network to allow X11 forwarding
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw  # x11 mapping
+      - .:/ros2_ws                       
+    privileged: true                      
+    stdin_open: true
+    tty: true
