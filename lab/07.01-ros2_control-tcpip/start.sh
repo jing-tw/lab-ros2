@@ -1,5 +1,5 @@
 #!/bin/bash
-docker compose up -d --build
+docker compose up -d #--build
 xhost +local:docker
 docker exec -it ros2-container bash
 # docker run -it --rm \
