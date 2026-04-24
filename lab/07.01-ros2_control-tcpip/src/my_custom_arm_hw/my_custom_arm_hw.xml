@@ -1,0 +1,7 @@
+<library path="my_custom_arm_hw">
+  <class name="my_custom_arm_hw/CustomTcpHardware"
+         type="my_custom_arm_hw::CustomTcpHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>Custom TCP/IP Hardware Interface for our robot</description>
+  </class>
+</library>

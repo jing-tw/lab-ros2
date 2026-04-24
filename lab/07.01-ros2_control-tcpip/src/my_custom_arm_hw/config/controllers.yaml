@@ -1,0 +1,44 @@
+# controller_manager:
+#   ros__parameters:
+#     update_rate: 100  # Hz，依你的 TCP 頻率調整
+#     joint_trajectory_controller:
+#       type: joint_trajectory_controller/JointTrajectoryController
+#     # 可再加 forward_position_controller 等
+
+
+controller_manager:
+  ros_parameters:
+    update_rate: 100  # Hz, adjusted based on your TCP frequency [cite: 106]
+
+    # The broadcaster is essential to publish /joint_states for visualization [cite: 10, 24]
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    # The main controller for executing trajectories from MoveIt2 [cite: 4, 108]
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+joint_trajectory_controller:
+  ros_parameters:
+    # These names must match the <joint> tags in your URDF 
+    joints:
+      - panda_joint1
+      - panda_joint2
+      - panda_joint3
+      - panda_joint4
+      - panda_joint5
+      - panda_joint6
+      - panda_joint7
+
+    # Interfaces required by the controller to talk to your hardware [cite: 309, 318, 327, 336, 345, 354]
+    command_interfaces:
+      - position
+
+    state_interfaces:
+      - position
+      - velocity
+
+    # Optional: Define constraints for trajectory execution
+    state_publish_rate: 100.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
