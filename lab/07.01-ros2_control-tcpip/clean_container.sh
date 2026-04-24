@@ -17,12 +17,33 @@ else
     echo "Operation cancelled."
 fi
 
-read -p "Are you sure you want to delete all packages in src folder? [y/N] " confirm
+# === Whitelist-based cleanup for src/ with glob support ===
+read -p "Are you sure you want to delete all files/folders in src/ except whitelisted items? [y/N] " confirm
 if [[ $confirm == [yY] ]]; then
-    # delete everything under src/ except mysrc/ folders and *.py files (including recursively).
-    sudo bash -c 'cd src && find . \( -name "mysrc" -o -name "*.py" \) -prune -o -exec rm -rf {} +'
-    echo " Packages removed."
+    # Whitelist supports exact names AND glob patterns
+    KEEP_LIST=("my*" "*.py" "README.md" ".git" "*.json")
+
+    # Build find expression using -o between each pattern
+    FIND_EXPR=""
+    for pattern in "${KEEP_LIST[@]}"; do
+        [[ -n $FIND_EXPR ]] && FIND_EXPR="$FIND_EXPR -o "
+        FIND_EXPR="$FIND_EXPR -name \"$pattern\""
+    done
+
+    echo "Keeping patterns: ${KEEP_LIST[*]}"
+    echo "Deleting everything else in src/..."
+
+    # Dry run first - comment this out when you're ready
+    echo "DRY RUN - would delete:"
+    bash -c "cd src && find . -mindepth 1  \\( $FIND_EXPR \\) -prune -o -print"
+
+    read -p "Proceed with actual delete? [y/N] " confirm2
+    if [[ $confirm2 == [yY] ]]; then
+        sudo bash -c "cd src && find . -mindepth 1  \\( $FIND_EXPR \\) -prune -o -exec rm -rf {} +"
+        echo "Cleanup done."
+    else
+        echo "Delete cancelled."
+    fi
 else
     echo "Operation cancelled."
 fi
-
