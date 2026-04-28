@@ -1,0 +1,93 @@
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.actions import TimerAction
+from ament_index_python.packages import get_package_share_directory
+import os
+import xacro
+import yaml # 記得 import
+
+def generate_launch_description():
+    pkg_name = 'my_custom_arm_hw'
+    pkg_share = get_package_share_directory(pkg_name)
+
+    # 主 xacro 檔案（推薦使用 my_robot.urdf.xacro）
+    xacro_file = os.path.join(pkg_share, 'urdf', 'my_robot.urdf.xacro')
+
+    # 安全檢查
+    if not os.path.exists(xacro_file):
+        raise FileNotFoundError(f'找不到 xacro 檔案: {xacro_file}')
+
+    # 處理 xacro（包含 include 的 ros2_control 部分）
+    doc = xacro.parse(open(xacro_file))
+    xacro.process_doc(doc)
+    robot_description = {'robot_description': doc.toxml()}
+    # doc = xacro.process_file(xacro_file)
+    # robot_description = {'robot_description': doc.toxml()}
+
+    # controllers.yaml 路徑
+    controller_config = os.path.join(pkg_share, 'config', 'controllers.yaml')
+    print(f'使用 controllers.yaml 路徑: {controller_config}')
+    if not os.path.exists(controller_config):
+        raise FileNotFoundError(f'找不到 controllers.yaml 檔案: {controller_config}')
+    
+    # with open(controller_config, 'r') as f:
+    #     yaml_config = yaml.safe_load(f)
+    
+    # # Controller Manager（載入你的 custom TCP hardware）
+    # control_node = Node(
+    #     package='controller_manager',
+    #     executable='ros2_control_node',
+    #     name='controller_manager',
+    #     output='both',
+    #     parameters=[
+    #         {'robot_description': robot_description},
+    #          yaml_config # 直接傳入解析後的字典
+    #      ],
+    #     # 如果你的 hardware plugin 需要額外參數，可以在這裡加入
+    # )
+
+    robot_description_content = doc.toxml()
+    
+    control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[
+            {'robot_description': robot_description_content},
+            controller_config
+        ],
+        output="both",
+    )
+
+    # Robot State Publisher（讓 RViz 和其他工具能看到模型）
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        name='robot_state_publisher',
+        output='both',
+        parameters=[robot_description]
+    )
+
+    # Spawner - Joint State Broadcaster
+    joint_state_broadcaster_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
+        output='screen'
+    )
+
+    # （可選）同時啟動軌跡控制器
+    trajectory_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_trajectory_controller', '--controller-manager', '/controller_manager'],
+        output='screen'
+    )
+
+    return LaunchDescription([
+        control_node,
+        robot_state_publisher,
+
+        # 延遲 4 秒，讓 custom TCP hardware 有時間初始化
+        TimerAction(period=4.0, actions=[joint_state_broadcaster_spawner]),
+        TimerAction(period=6.0, actions=[trajectory_spawner]),
+    ])

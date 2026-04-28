@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="my_robot">
-    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+    <xacro:arg name="initial_positions_file" default="$(find my_custom_arm_hw)/urdf/initial_positions.yaml" />
     <xacro:arg name="ros2_control_hardware_type" default="mock_components" />
     <!-- Import myrobot body urdf file -->
-    <xacro:include filename="my_robot_body.urdf.xacro" />
+    <xacro:include filename="$(find my_custom_arm_hw)/urdf/my_robot_body.urdf.xacro" />
 
     <!-- Import myrobot ros2_control description -->
-    <xacro:include filename="my_robot.ros2_control.xacro" />
-    <xacro:include filename="my_robot_hand.ros2_control.xacro" />
+    <xacro:include filename="$(find my_custom_arm_hw)/urdf/my_robot.ros2_control.xacro" />
+    <!-- <xacro:include filename="$(find my_custom_arm_hw)/urdf/my_robot_hand.ros2_control.xacro" /> -->
 
     <xacro:my_robot_ros2_control name="my_robot_FakeSystem" initial_positions_file="$(arg initial_positions_file)" ros2_control_hardware_type="$(arg ros2_control_hardware_type)"/>
-    <xacro:my_robot_hand_ros2_control name="my_robot_HandFakeSystem" ros2_control_hardware_type="$(arg ros2_control_hardware_type)"/>
+    <!-- <xacro:my_robot_hand_ros2_control name="my_robot_HandFakeSystem" ros2_control_hardware_type="$(arg ros2_control_hardware_type)"/> -->
 </robot>

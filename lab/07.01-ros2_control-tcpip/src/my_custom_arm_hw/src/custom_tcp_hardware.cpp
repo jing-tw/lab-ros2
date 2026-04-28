@@ -1,4 +1,3 @@
-
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "my_custom_arm_hw/custom_tcp_hardware.hpp"
 #include <rclcpp/rclcpp.hpp>
@@ -77,11 +76,12 @@ namespace my_custom_arm_hw
     std::vector<hardware_interface::CommandInterface> command_interfaces;
     for (size_t i = 0; i < info_.joints.size(); ++i)
     {
-      // command_interfaces.emplace_back(hardware_interface::CommandInterface(
-      //     info_.joints[i].name, hardware_interface::standard_interfaces::HW_IF_POSITION, &hw_position_commands_[i]));
-
       command_interfaces.emplace_back(hardware_interface::CommandInterface(
           info_.joints[i].name, "position", &hw_position_commands_[i]));
+      // command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      //     info_.joints[i].name, "velocity", &hw_velocity_states_[i]));
+      // command_interfaces.emplace_back(hardware_interface::CommandInterface(
+      //     info_.joints[i].name, "effort", &hw_position_commands_[i]));
     }
     return command_interfaces;
   }

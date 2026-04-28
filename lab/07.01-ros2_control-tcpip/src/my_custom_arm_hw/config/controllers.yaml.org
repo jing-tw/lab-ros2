@@ -1,0 +1,49 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100
+    use_sim_time: false
+
+    # 必須的 Joint State Broadcaster（用來發佈 /joint_states 給 RViz 等）
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    # 你的主要軌跡控制器
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+# ======================
+# joint_trajectory_controller 的獨立參數（一定要這樣分開寫）
+# ======================
+joint_trajectory_controller:
+  ros__parameters:
+    # 關節名稱必須與你 URDF 中的 <joint name="..."> 完全一致
+    joints:
+      - panda_joint1
+      - panda_joint2
+      - panda_joint3
+      - panda_joint4
+      - panda_joint5
+      - panda_joint6
+      - panda_joint7
+
+    # 你的 custom TCP 硬體目前支援的介面
+    command_interfaces:
+      - position
+      # - velocity
+      # - effort
+
+    state_interfaces:
+      - position
+      - velocity
+
+    # 其他常用設定
+    state_publish_rate: 100.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+
+    # 如果之後要做 PID 控制，可以在這裡加入 gains（目前先不用）
+    # gains:
+    #   panda_joint1: {p: 100.0, i: 0.0, d: 1.0}
+    #   panda_joint2: {p: 100.0, i: 0.0, d: 1.0}
+    #   ...
